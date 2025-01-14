@@ -23,8 +23,8 @@ markdown_extensions:
       smart_enable: all
   - pymdownx.caret
   - pymdownx.emoji:
-      emoji_generator: !!python/name:material.extensions.emoji.to_svg
-      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: material.extensions.emoji.to_svg
+      emoji_index: material.extensions.emoji.twemoji
   - pymdownx.highlight:
       anchor_linenums: true
       line_spans: __span
@@ -45,11 +45,12 @@ markdown_extensions:
       custom_fences:
         - name: mermaid
           class: mermaid
-          format: !!python/name:pymdownx.superfences.fence_code_format
+          format: pymdownx.superfences.fence_code_format
   - pymdownx.tabbed:
       alternate_style: true
       combine_header_slug: true
-      slugify: !!python/object/apply:pymdownx.slugs.slugify
+      slugify:
+        function: pymdownx.slugs.slugify
         kwds:
           case: lower
   - pymdownx.tasklist:
