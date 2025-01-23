@@ -3,6 +3,7 @@ import shutil
 import subprocess
 from typing import Any, Dict, List, Literal, Optional, Union
 
+from litellm import AuthenticationError as LiteLLMAuthenticationError
 from pydantic import Field, InstanceOf, PrivateAttr, model_validator
 
 from crewai.agents import CacheHandler
@@ -86,7 +87,7 @@ class Agent(BaseAgent):
     llm: Union[str, InstanceOf[LLM], Any] = Field(
         description="Language model that will run the agent.", default=None
     )
-    function_calling_llm: Optional[Any] = Field(
+    function_calling_llm: Optional[Union[str, InstanceOf[LLM], Any]] = Field(
         description="Language model that will run the agent.", default=None
     )
     system_template: Optional[str] = Field(
@@ -142,7 +143,8 @@ class Agent(BaseAgent):
         self.agent_ops_agent_name = self.role
 
         self.llm = create_llm(self.llm)
-        self.function_calling_llm = create_llm(self.function_calling_llm)
+        if self.function_calling_llm and not isinstance(self.function_calling_llm, LLM):
+            self.function_calling_llm = create_llm(self.function_calling_llm)
 
         if not self.agent_executor:
             self._setup_agent_executor()
@@ -260,6 +262,9 @@ class Agent(BaseAgent):
                 }
             )["output"]
         except Exception as e:
+            if isinstance(e, LiteLLMAuthenticationError):
+                # Do not retry on authentication errors
+                raise e
             self._times_executed += 1
             if self._times_executed > self.max_retry_limit:
                 raise e

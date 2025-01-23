@@ -1,11 +1,7 @@
 import os
 from typing import Any, Dict, List, Optional, Union
 
-from packaging import version
-
 from crewai.cli.constants import DEFAULT_LLM_MODEL, ENV_VARS, LITELLM_PARAMS
-from crewai.cli.utils import read_toml
-from crewai.cli.version import get_crewai_version
 from crewai.llm import LLM
 
 
@@ -67,7 +63,6 @@ def create_llm(
             api_key=api_key,
             base_url=base_url,
         )
-        print("LLM created with extracted parameters; " f"model='{model}'")
         return created_llm
     except Exception as e:
         print(f"Error instantiating LLM from unknown object type: {e}")
